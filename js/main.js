@@ -109,6 +109,7 @@ function update() {
   renderer.clearDepth();
   renderer.render(scene, camera);
 
+  // アニメーションフレームはVR空間が描画されたあと
   vrDisplay.requestAnimationFrame(update);
 }
 
