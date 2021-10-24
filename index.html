@@ -1,14 +1,23 @@
-<html>
-  <head>
+<head>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-  </head>
-  <body>
-    <a-scene>
-      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
-      <a-sky color="#ECECEC"></a-sky>
+    <script
+        src="https://cdn.rawgit.com/kripken/ammo.js/dcab07bf0e7f2b4b64c01dc45da846344c8f50be/builds/ammo.js"></script>
+    <script src="https://cdn.rawgit.com/takahirox/aframe-outline/v1.1.1/build/aframe-outline.min.js"></script>
+    <script src="https://cdn.rawgit.com/takahirox/a-mmd/v1.0.3/build/a-mmd.min.js"></script>
+</head>
+
+<body>
+    <a-scene antialias="true" outline>
+        <a-entity position="0 10 20">
+            <a-camera></a-camera>
+        </a-entity>
+
+        <a-entity mmd="audio:./audios/audio.mp3;">
+            <a-entity mmd-model="model:./models/model.pmd;
+                             vmd:./vmds/dance.vmd;"></a-entity>
+        </a-entity>
+
+        <a-light type="ambient" color="#888"></a-light>
+        <a-light color="#AAA" distance="100" intensity="0.4" type="point"></a-light>
     </a-scene>
-  </body>
-</html>
+</body>
