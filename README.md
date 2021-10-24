@@ -1,3 +1,3 @@
 # AR MMD
 
-Web AR test
+Web AR Test
