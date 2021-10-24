@@ -1,3 +1,3 @@
-# AR Test
+# three_ar_sample
 
-This is AR test repository.
+https://qiita.com/shoichi1023/items/3da1cda73a74ebf3fac9
