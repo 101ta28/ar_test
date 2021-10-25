@@ -1,147 +1,72 @@
-var mesh, camera, scene, renderer, effect;
-var helper;
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  alpha: true,
+});
+renderer.setClearColor(new THREE.Color(), 0);
+renderer.setSize(640, 480);
+renderer.domElement.style.position = "absolute";
+renderer.domElement.style.top = "0px";
+renderer.domElement.style.left = "0px";
+document.body.appendChild(renderer.domElement);
 
-var ready = false;
+const scene = new THREE.Scene();
+scene.visible = false;
+const camera = new THREE.Camera();
+scene.add(camera);
 
-var context;
-var source;
-var controls, marker;
+const arToolkitSource = new THREEx.ArToolkitSource({
+  sourceType: "webcam",
+});
 
-var audio;
-
-var clock = new THREE.Clock();
-
-init();
-
-function init() {
-  scene = new THREE.Scene();
-
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
-
-  renderer.domElement.style.position = "absolute";
-  document.body.appendChild(renderer.domElement);
-
-  effect = new THREE.OutlineEffect(renderer);
-
-  camera = new THREE.Camera();
-  scene.add(camera);
-
-  var light = new THREE.DirectionalLight(0xffffff);
-  light.position.set(-20, 20, 20);
-  scene.add(light);
-
-  function onResize() {
-    source.onResizeElement();
-    source.copyElementSizeTo(renderer.domElement);
-
-    if (context.arController !== null) {
-      source.copyElementSizeTo(context.arController.canvas);
-    }
-  }
-
-  source = new THREEx.ArToolkitSource({
-    sourceType: "webcam",
-  });
-  source.init(function onReady() {
+arToolkitSource.init(() => {
+  setTimeout(() => {
     onResize();
-  });
+  }, 2000);
+});
 
-  context = new THREEx.ArToolkitContext({
-    debug: false,
-    cameraParametersUrl:
-      THREEx.ArToolkitContext.baseURL + "../data/data/camera_para.dat",
-    detectionMode: "mono",
-    imageSmoothingEnabled: true,
-    maxDetectionRate: 60,
-    canvasWidth: source.parameters.sourceWidth,
-  });
+addEventListener("resize", () => {
+  onResize();
+});
 
-  context.init(function onCompleted() {
-    camera.projectionMatrix.copy(context.getProjectionMatrix());
-  });
-
-  window.addEventListener("resize", function () {
-    onResize();
-  });
-
-  marker = new THREE.Group();
-  controls = new THREEx.ArMarkerControls(context, marker, {
-    barcodeValue: "siro",
-    type: "pattern",
-    patternUrl: "/data/pattern-siro.patt",
-  });
-  scene.add(marker);
-
-  function onProgress(xhr) {
-    if (xhr.lengthComputable) {
-      var percentComplete = (xhr.loaded / xhr.total) * 100;
-      console.log(Math.round(percentComplete, 2) + "% downloaded");
-    }
+function onResize() {
+  arToolkitSource.onResizeElement();
+  arToolkitSource.copyElementSizeTo(renderer.domElement);
+  if (arToolkitContext.arController !== null) {
+    arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
   }
-
-  function onError(xhr) {}
-
-  var modelFile = "/siro/siro_dance_wintercostume_white_v1.1.pmx";
-
-  var vmdFiles = ["/motions/sukiyuki/sukiyuki.vmd"];
-
-  var audioFile = "/audio/sukiyuki.mp3";
-  var audioParams = { delayTime: 0 };
-
-  helper = new THREE.MMDAnimationHelper({
-    afterglow: 2.0,
-  });
-
-  new THREE.MMDLoader().loadWithAnimation(
-    modelFile,
-    vmdFiles,
-    function (mmd) {
-      mesh = mmd.mesh;
-
-      var model = new THREE.Object3D();
-      model.scale.x = 0.1;
-      model.scale.y = 0.1;
-      model.scale.z = 0.1;
-      model.add(mesh);
-
-      helper.add(mesh, {
-        animation: mmd.animation,
-        physics: true,
-      });
-
-      marker.add(model);
-
-      new THREE.AudioLoader().load(audioFile, function (buffer) {
-        var listener = new THREE.AudioListener();
-        var audio = new THREE.Audio(listener).setBuffer(buffer);
-
-        listener.position.z = 1;
-
-        helper.add(audio, audioParams);
-        marker.add(listener);
-
-        // Music Load Flag
-        ready = true;
-      });
-      ready = true;
-    },
-    onProgress,
-    onError
-  );
 }
 
-setInterval(function () {
-  if (source.ready === false) {
-    return;
-  }
+const arToolkitContext = new THREEx.ArToolkitContext({
+  cameraParametersUrl: "data/camera_para.dat",
+  detectionMode: "mono",
+});
 
-  if (ready) {
-    helper.update(clock.getDelta());
-  }
+arToolkitContext.init(() => {
+  camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+});
 
+const arMarkerControls = new THREEx.ArMarkerControls(arToolkitContext, camera, {
+  type: "pattern",
+  patternUrl: "./data/pattern-siro.patt",
+  changeMatrixMode: "cameraTransformMatrix",
+});
+
+const mesh = new THREE.Mesh(
+  new THREE.CubeGeometry(1, 1, 1),
+  new THREE.MeshNormalMaterial()
+);
+mesh.position.y = 1.0;
+scene.add(mesh);
+
+const clock = new THREE.Clock();
+requestAnimationFrame(function animate() {
+  requestAnimationFrame(animate);
+  if (arToolkitSource.ready) {
+    arToolkitContext.update(arToolkitSource.domElement);
+    scene.visible = camera.visible;
+  }
+  const delta = clock.getDelta();
+  mesh.rotation.x += delta * 1.0;
+  mesh.rotation.y += delta * 1.5;
   renderer.render(scene, camera);
-  context.update(source.domElement);
-}, 1000 / 60);
+});
