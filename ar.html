@@ -2,23 +2,30 @@
 <html>
 
 <head>
-    <title>Marker Based AR with AR.js and Three.js</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/113/three.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar-nft.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>MMD</title>
 </head>
 
-<body>
-    <script src="/js/main.js"></script>
-    <script src="/third_party/three.js/three.js"></script>
-    <script src="/third_party/three.js/VRControls.js"></script>
-    <script src="/third_party/three.js/mmdparser.min.js"></script>
-    <script src="/third_party/three.js/TGALoader.js"></script>
-    <script src="/third_party/three.js/ammo.js"></script>
-    <script src="/third_party/three.js/CCDIKSolver.js"></script>
-    <script src="/third_party/three.js/MMDPhysics.js"></script>
-    <script src="/third_party/three.js/MMDLoader.js"></script>
-    <script src="/third_party/three.ar.js"></script>
+<body style="margin:0px; overflow:hidden;">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+
+    <script src="https://github.com/kripken/ammo.js/blob/main/builds/ammo.js"></script>
+    <script src="https://cdn.rawgit.com/takahirox/aframe-outline/v1.1.1/build/aframe-outline.min.js"></script>
+    <script src="https://cdn.rawgit.com/takahirox/a-mmd/v1.0.3/build/a-mmd.min.js"></script>
+
+    <a-scene embedded arjs="debugUIEnabled:false;">
+        <a-light type="directional" color="#B7B7B7" 　intensity="0.5" position="0 40 0"></a-light>
+        <a-marker type="siro" url="/data/pattern-siro.patt">
+            <a-entity mmd="">
+                <a-entity rotation="-90 0 0" position="0 0.5 0.5" scale="0.1 0.1 0.1"
+                    mmd-model="model:/siro/siro_dance_wintercostume_white_v1.1.pmx; vmd:\motions\sukiyuki\sukiyuki.vmd; physics:false; blink:true;">
+                </a-entity>
+            </a-entity>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
 </body>
 
 </html>
